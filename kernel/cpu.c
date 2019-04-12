@@ -1064,6 +1064,23 @@ void init_cpu_online(const struct cpumask *src)
 	cpumask_copy(to_cpumask(cpu_online_bits), src);
 }
 
+enum cpu_mitigations cpu_mitigations = CPU_MITIGATIONS_AUTO;
+
+static int __init mitigations_parse_cmdline(char *arg)
+{
+	if (!strcmp(arg, "off"))
+		cpu_mitigations = CPU_MITIGATIONS_OFF;
+	else if (!strcmp(arg, "auto"))
+		cpu_mitigations = CPU_MITIGATIONS_AUTO;
+
+       else
+		pr_crit("Unsupported mitigations=%s, system may still be vulnerable\n",
+			arg);
+
+	return 0;
+}
+early_param("mitigations", mitigations_parse_cmdline);
+
 static ATOMIC_NOTIFIER_HEAD(idle_notifier);
 
 void idle_notifier_register(struct notifier_block *n)
@@ -1083,3 +1100,4 @@ void idle_notifier_call_chain(unsigned long val)
 	atomic_notifier_call_chain(&idle_notifier, val, NULL);
 }
 EXPORT_SYMBOL_GPL(idle_notifier_call_chain);
+
