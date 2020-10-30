@@ -1,0 +1,2 @@
+# SM-A307FN
+SM-A307FN kernel
